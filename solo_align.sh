@@ -10,7 +10,7 @@ set -u
 sortbyname=0
 mate="" 
 ispet=0
-extra="-u"
+extra=""
 fastq=""
 index=""
 aligntype=0
