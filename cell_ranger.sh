@@ -1,11 +1,24 @@
 set -e
 set -u
 
+# Getting all of the necessary options.
+full=0
+while getopts ":f" opt;
+do
+   case $opt in
+       f) 
+           full=1
+           ;;
+   esac
+done
+
+shift $((OPTIND-1))
 if [ $# -le 2 ]
 then
-    echo "$0 <barcode> <annotation> [OPTIONS]"
+    echo "$0 [-f] <barcode> <annotation> [OPTIONS]"
     exit 1
 fi
+
 bc=$1
 anno=$2
 shift
@@ -18,7 +31,6 @@ if [ ! -e ${workdir} ]
 then
     mkdir ${workdir}
 fi
-StripeThis ${workdir}
 
 # Setting up the final output directory.
 if [ ! -e results ]
@@ -26,26 +38,25 @@ then
     mkdir results
 fi
 
-# Unpacking the files into 'working' and setting up the output directory.
-if [ ! -e ${bc} ]
-then 
-    for f in $(ls fastq | grep "${bc}.*tar$")
-    do
-        tar xf fastq/${f} -C ${workdir}
-    done
-    mkdir ${bc}
-    StripeThis ${bc}
-fi
-
-# Setting up the output directory.
 newdir=results/${bc}
 if [ ! -e ${newdir} ]
 then
     mkdir ${newdir}
 fi
 
-# Executing cellranger
-/home/mib-cri/software/10Xgenomics/cellranger-1.2.0/cellranger count \
+# Unpacking the files into 'working' and setting up the output directory.
+already_done=${working}/.completed
+if [ ! -e ${working} ]
+then 
+    for f in $(ls fastq | grep "${bc}.*tar$")
+    do
+        tar xf fastq/${f} -C ${workdir}
+    done
+    touch ${already_done}
+fi
+
+# Executing cellranger on the new cluster.
+/Users/bioinformatics/software/cellranger/cellranger-2.1.0/cellranger count \
     --id="${bc}" \
     --transcriptome="${anno}" \
     --fastqs="${workdir}" \
@@ -59,5 +70,8 @@ cp -L ${bc}/outs/metrics_summary.csv ${newdir}
 
 # Cleaning out the files.
 rm -r ${workdir}
-rm -r ${bc}
+if [ ${full} -ne 1 ]
+then
+    rm -r ${bc}
+fi
 
