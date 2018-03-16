@@ -46,7 +46,7 @@ fi
 
 # Unpacking the files into 'working' and setting up the output directory.
 already_done=${workdir}/.completed
-if [ ! -e ${workdir} ]
+if [ ! -e ${already_done} ]
 then 
     for f in $(ls fastq | grep "${bc}.*tar$")
     do
