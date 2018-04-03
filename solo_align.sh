@@ -101,30 +101,25 @@ else
     subread-align -r $fastq $extra
 fi
 
-# Getting rid of the indel files.
-indfile=${ofile}.indel
-if [ -e $indfile ]
-then
-    rm $indfile
-fi
-
-# Getting rid of old index files.
-idxfile=${ofile}.bai
-if [ -e $idxfile ]
-then
-    rm $idxfile
-fi
+# Getting rid of unnecessary files (indel files, old indexes).
+for stuff in ${ofile}.indel ${ofile}.indel.vcf ${ofile}.bai
+do 
+    if [ -e ${stuff} ]
+    then
+        rm ${stuff}
+    fi
+done
 
 # Sorting the files and removing duplicates.
 tempbam=bam/temp_${prefix}.bam
-SortSam I=$ofile O=$tempbam SORT_ORDER=coordinate
+samtools sort -o $tempbam $ofile
 MarkDuplicates I=$tempbam O=$ofile M=${tempbam}.txt AS=true REMOVE_DUPLICATES=false VALIDATION_STRINGENCY=SILENT ${handlearg}
 rm $tempbam ${tempbam}.txt
 
 # Re-sorting the files by name, if requested.
 if [ $sortbyname -eq 1 ]
 then
-    SortSam I=$ofile O=$tempbam SORT_ORDER=queryname
+    samtools sort -n -o $tempbam $ofile
     mv $tempbam $ofile
 else
     samtools index $ofile
