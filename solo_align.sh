@@ -62,11 +62,6 @@ fi
 #######################################################################################
 # Setting up folders to put stuff in.
 
-if [ ! -e qual ]
-then
-    mkdir qual
-fi
-
 if [ ! -e bam ]
 then
     mkdir bam
@@ -77,22 +72,8 @@ then
     mkdir logs
 fi
 
-function run_fastqc {
-    tmpdir=qual/${prefix}
-    mkdir -p $tmpdir
-    fastqc $1 -o $tmpdir
-    if [ $ispet -eq 0 ]
-    then        
-        mv $tmpdir/*.zip qual/${prefix}.zip
-    else 
-        mv $tmpdir/*.zip qual/${prefix}_${2}.zip
-    fi            
-    rm -r $tmpdir
-}
-
 #######################################################################################
 
-run_fastqc $fastq 1
 ofile="bam/${prefix}.bam"
 extra="${extra} -o ${ofile} -i ${index} -t ${aligntype}"
 
@@ -115,7 +96,6 @@ extra="${extra} -P ${phred}"
 # Handling it, if it's PE.
 if [ $ispet -eq 1 ]
 then
-    run_fastqc $mate 2
     subread-align -r $fastq -R $mate $extra 
 else
     subread-align -r $fastq $extra
