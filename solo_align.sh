@@ -130,7 +130,6 @@ fi
 success=logs/${prefix}.log
 touch $success
 echo $( subread-align -version 2>&1 | grep "." ) "($extra)" >> $success
-fastqc --version >> $success
 samtools 2>&1 | grep "Version" | sed "s/^/Samtools /" >> $success
 MarkDuplicates --version 2>&1 | sed "s/^/Picard version /" >> $success
 
