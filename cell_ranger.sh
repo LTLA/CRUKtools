@@ -56,7 +56,7 @@ then
 fi
 
 # Executing cellranger on the new cluster.
-/Users/bioinformatics/software/cellranger/cellranger-2.1.0/cellranger count \
+/Users/bioinformatics/software/cellranger/cellranger-3.0.1/cellranger count \
     --id="${bc}" \
     --transcriptome="${anno}" \
     --fastqs="${workdir}" \
