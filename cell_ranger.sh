@@ -64,7 +64,8 @@ fi
     ${otheropts}
 
 # Pulling out the analysis files.
-cp -L ${bc}/outs/filtered_gene_bc_matrices/*/* ${newdir}
+cp -r -L ${bc}/outs/filtered_feature_bc_matrix/ ${newdir}/filtered
+cp -r -L ${bc}/outs/raw_feature_bc_matrix/ ${newdir}/raw
 cp -L ${bc}/outs/web_summary.html ${newdir}
 cp -L ${bc}/outs/metrics_summary.csv ${newdir}
 
